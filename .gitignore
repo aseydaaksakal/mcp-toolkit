@@ -12,3 +12,6 @@ htmlcov/
 .DS_Store
 .idea/
 .vscode/
+
+# Built docs site
+site/

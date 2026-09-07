@@ -1,0 +1,32 @@
+site_name: mcp-toolkit
+site_url: https://aseydaaksakal.github.io/mcp-toolkit/
+repo_url: https://github.com/aseydaaksakal/mcp-toolkit
+repo_name: aseydaaksakal/mcp-toolkit
+site_description: Expose internal systems to LLM agents over the Model Context Protocol.
+theme:
+  name: material
+  features: [navigation.sections, navigation.top, content.code.copy, search.suggest]
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      toggle: { icon: material/brightness-7, name: Dark mode }
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      toggle: { icon: material/brightness-4, name: Light mode }
+markdown_extensions:
+  - admonition
+  - tables
+  - toc: { permalink: true }
+  - pymdownx.highlight
+  - pymdownx.superfences
+nav:
+  - Home: index.md
+  - Playground: playground.html
+  - Guides:
+      - Getting started: getting-started.md
+      - Tools: tools.md
+      - Adapters: adapters.md
+      - Security: security.md
+      - Protocol: protocol.md
