@@ -1,6 +1,6 @@
 # mcp-toolkit
 
-[![CI](https://github.com/aseydaaksakal/mcp-toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/aseydaaksakal/mcp-toolkit/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/aseydaaksakal/mcp-toolkit?quickstart=1)
+[![CI](https://github.com/aseydaaksakal/mcp-toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/aseydaaksakal/mcp-toolkit/actions/workflows/ci.yml) [![Docs & live playground](https://img.shields.io/badge/docs-live%20playground-2563eb)](https://aseydaaksakal.github.io/mcp-toolkit/playground.html) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/aseydaaksakal/mcp-toolkit?quickstart=1)
 
 Expose internal systems to LLM agents over the [Model Context Protocol](https://modelcontextprotocol.io), without hand-writing JSON-RPC or JSON Schema.
 
@@ -24,6 +24,9 @@ server.run()
 ```
 
 That is a complete MCP server. The tool name, description and input schema are derived from the function, so they cannot drift away from the code they describe.
+
+
+**Try it without installing anything:** [aseydaaksakal.github.io/mcp-toolkit/playground.html](https://aseydaaksakal.github.io/mcp-toolkit/playground.html) — the real package running in your browser.
 
 ---
 
