@@ -9,7 +9,7 @@ description = "Expose internal systems to LLM agents over the Model Context Prot
 readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }
-authors = [{ name = "Abdullah Seyda Aksakal", email = "aseydaaksakal@gmail.com" }]
+authors = [{ name = "Abdullah Seyda Aksakal" }]
 keywords = ["mcp", "model-context-protocol", "llm", "agents", "tools", "json-rpc"]
 classifiers = [
     "Development Status :: 3 - Alpha",
