@@ -1,0 +1,50 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mcp-toolkit"
+version = "0.1.0"
+description = "Expose internal systems to LLM agents over the Model Context Protocol."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "Abdullah Seyda Aksakal", email = "aseydaaksakal@gmail.com" }]
+keywords = ["mcp", "model-context-protocol", "llm", "agents", "tools", "json-rpc"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4", "ruff>=0.5"]
+
+[project.scripts]
+mcp-toolkit = "mcp_toolkit.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/aseydaaksakal/mcp-toolkit"
+Documentation = "https://github.com/aseydaaksakal/mcp-toolkit#readme"
+Issues = "https://github.com/aseydaaksakal/mcp-toolkit/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mcp_toolkit"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
