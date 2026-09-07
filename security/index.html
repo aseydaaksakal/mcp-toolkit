@@ -1,0 +1,972 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Expose internal systems to LLM agents over the Model Context Protocol.">
+      
+      
+      
+        <link rel="canonical" href="https://aseydaaksakal.github.io/mcp-toolkit/security/">
+      
+      
+        <link rel="prev" href="../adapters/">
+      
+      
+        <link rel="next" href="../protocol/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Security - mcp-toolkit</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#security" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="mcp-toolkit" class="md-header__button md-logo" aria-label="mcp-toolkit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            mcp-toolkit
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Security
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aseydaaksakal/mcp-toolkit" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aseydaaksakal/mcp-toolkit
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="mcp-toolkit" class="md-nav__button md-logo" aria-label="mcp-toolkit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    mcp-toolkit
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aseydaaksakal/mcp-toolkit" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aseydaaksakal/mcp-toolkit
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../playground.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Playground
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adapters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adapters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#threat-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Threat model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layer-1-the-credential" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Layer 1 — the credential
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layer-2-accesspolicy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Layer 2 — AccessPolicy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layer-3-ratelimiter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Layer 3 — RateLimiter
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layer-4-redactor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Layer 4 — Redactor
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layer-5-error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Layer 5 — error handling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layer-6-auditlog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Layer 6 — AuditLog
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reporting-a-vulnerability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reporting a vulnerability
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#threat-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Threat model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layer-1-the-credential" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Layer 1 — the credential
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layer-2-accesspolicy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Layer 2 — AccessPolicy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layer-3-ratelimiter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Layer 3 — RateLimiter
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layer-4-redactor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Layer 4 — Redactor
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layer-5-error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Layer 5 — error handling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layer-6-auditlog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Layer 6 — AuditLog
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reporting-a-vulnerability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reporting a vulnerability
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="security">Security<a class="headerlink" href="#security" title="Permanent link">&para;</a></h1>
+<h2 id="threat-model">Threat model<a class="headerlink" href="#threat-model" title="Permanent link">&para;</a></h2>
+<p>The agent is not the attacker. The agent is the confused deputy.</p>
+<p>A tool call is triggered by tokens in a context window, and those tokens come
+from wherever the conversation has been: a user message, a retrieved document,
+a support ticket, the output of a previous tool. Any of them can contain
+instructions. The model has no reliable way to tell data from instruction, so
+the boundary has to be enforced on your side of the call.</p>
+<p>Which means:</p>
+<ul>
+<li>Treat every argument as attacker-controlled, including ones the model
+  "derived" from a trusted source.</li>
+<li>Assume anything a tool returns may be echoed back to a user later, so it must
+  not contain secrets.</li>
+<li>Assume tools will be called in orders you did not anticipate, at rates you
+  did not anticipate.</li>
+</ul>
+<p>The guardrails below are layers. None is sufficient alone.</p>
+<h2 id="layer-1-the-credential">Layer 1 — the credential<a class="headerlink" href="#layer-1-the-credential" title="Permanent link">&para;</a></h2>
+<p>Before any of this code runs, decide what the process itself can do. A
+read-only database user makes the SQL guard a second opinion rather than the
+only thing standing between an agent and <code>DROP TABLE</code>. An API key scoped to the
+two endpoints you declared makes a bug in <code>RestAdapter</code> uninteresting.</p>
+<p>Grant the minimum, then use the layers below to narrow further.</p>
+<h2 id="layer-2-accesspolicy">Layer 2 — AccessPolicy<a class="headerlink" href="#layer-2-accesspolicy" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="n">policy</span> <span class="o">=</span> <span class="n">AccessPolicy</span><span class="p">(</span><span class="n">allow</span><span class="o">=</span><span class="p">[</span><span class="s2">"orders.*"</span><span class="p">,</span> <span class="s2">"catalog.read"</span><span class="p">],</span> <span class="n">deny</span><span class="o">=</span><span class="p">[</span><span class="s2">"orders.delete"</span><span class="p">])</span>
+</code></pre></div>
+<p>Deny wins. An empty <code>allow</code> means "everything not denied", which is the
+convenient default and the wrong one for production — start from an explicit
+allowlist.</p>
+<p>The policy filters <code>tools/list</code> as well as <code>tools/call</code>. A blocked tool is
+invisible rather than merely refused, so the model does not learn it exists,
+does not spend turns trying it, and does not report its existence to a user who
+was probing for it.</p>
+<p>Scopes gate individual tools on session state:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@server</span><span class="o">.</span><span class="n">tool</span><span class="p">(</span><span class="n">scopes</span><span class="o">=</span><span class="p">[</span><span class="s2">"orders:write"</span><span class="p">])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cancel_order</span><span class="p">(</span><span class="n">order_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="c1"># after you have authenticated the caller yourself:</span>
+<span class="n">server</span><span class="o">.</span><span class="n">policy</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">with_scopes</span><span class="p">(</span><span class="s2">"orders:write"</span><span class="p">)</span>
+</code></pre></div>
+<p><code>with_scopes</code> returns a copy. The base policy is unchanged, so one session
+granting a scope cannot widen another.</p>
+<h2 id="layer-3-ratelimiter">Layer 3 — RateLimiter<a class="headerlink" href="#layer-3-ratelimiter" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="n">RateLimiter</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">burst</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</code></pre></div>
+<p>A token bucket per tool name. Bounds the damage from a loop the model cannot
+break out of, and from a prompt injection that tells it to enumerate every
+order id.</p>
+<p>Policy is checked before the limiter, so a denied caller cannot drain the
+budget of a tool it is not allowed to use. Rejections carry
+<code>data.retry_after_seconds</code>, which well-behaved clients will respect.</p>
+<p>The buckets are in-process. Across replicas you need a shared store; the class
+is small enough to subclass with Redis behind <code>check()</code>.</p>
+<h2 id="layer-4-redactor">Layer 4 — Redactor<a class="headerlink" href="#layer-4-redactor" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="n">Redactor</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="p">{</span>
+    <span class="s2">"employee_id"</span><span class="p">:</span> <span class="sa">r</span><span class="s2">"\bEMP-\d</span><span class="si">{5}</span><span class="s2">\b"</span><span class="p">,</span>
+    <span class="s2">"internal_url"</span><span class="p">:</span> <span class="sa">r</span><span class="s2">"https://[\w.-]+\.internal\b"</span><span class="p">,</span>
+<span class="p">})</span>
+</code></pre></div>
+<p>Applied to every tool result and every audit record. The defaults cover emails,
+bearer tokens, <code>sk-</code>/<code>pk-</code>/<code>ghp-</code>/<code>xox</code> style keys, AWS access key ids, PEM
+headers, IBANs and card numbers.</p>
+<p>The defaults do not know your organisation's identifier formats. Add them. A
+redactor that has never been extended is mostly decorative.</p>
+<p>This is a safety net, not a control. It cannot recognise a secret that looks
+like ordinary text. Do not let it substitute for not returning the column in
+the first place.</p>
+<h2 id="layer-5-error-handling">Layer 5 — error handling<a class="headerlink" href="#layer-5-error-handling" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="k">raise</span> <span class="n">ToolError</span><span class="p">(</span><span class="s2">"no order named 'ORD-9'; call list_orders for valid ids"</span><span class="p">)</span>   <span class="c1"># model sees this</span>
+<span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"connect failed: postgres://user:hunter2@db"</span><span class="p">)</span>            <span class="c1"># model sees a type name</span>
+</code></pre></div>
+<p>Unexpected exceptions are logged in full and reported to the model as
+<code>Tool 'x' failed: RuntimeError</code>. Backend error text is a reliable source of
+connection strings, internal hostnames and table names, and anything in the
+context window can be extracted from it later.</p>
+<p>Argument validation runs before your handler, so malformed calls never reach
+your code.</p>
+<h2 id="layer-6-auditlog">Layer 6 — AuditLog<a class="headerlink" href="#layer-6-auditlog" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="n">AuditLog</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+</code></pre></div>
+<p>One JSON object per call: timestamp, tool, outcome, duration, redacted
+arguments, error. stderr rather than stdout because stdout is the protocol
+channel — writing anything else there corrupts the session.</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="nt">"ts"</span><span class="p">:</span><span class="w"> </span><span class="mf">1730000000.5</span><span class="p">,</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"orders.lookup"</span><span class="p">,</span><span class="w"> </span><span class="nt">"ok"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="nt">"duration_ms"</span><span class="p">:</span><span class="w"> </span><span class="mf">12.4</span><span class="p">,</span>
+<span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"order_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ORD-9"</span><span class="p">},</span><span class="w"> </span><span class="nt">"error"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ToolError: no order named 'ORD-9'"</span><span class="p">}</span>
+</code></pre></div>
+<p>Worth alerting on: a spike in <code>ok: false</code>, a tool called far outside its usual
+rate, arguments that look like enumeration.</p>
+<h2 id="checklist">Checklist<a class="headerlink" href="#checklist" title="Permanent link">&para;</a></h2>
+<p>Before an agent reaches a system that matters:</p>
+<ul>
+<li>[ ] The process credential is read-only, or scoped to exactly what is needed</li>
+<li>[ ] <code>AccessPolicy</code> starts from an explicit <code>allow</code> list</li>
+<li>[ ] Write tools require a scope, granted only after your own auth check</li>
+<li>[ ] <code>RateLimiter</code> is configured, and the limit is a number someone chose</li>
+<li>[ ] <code>Redactor</code> has patterns for your internal identifier formats</li>
+<li>[ ] <code>AuditLog</code> is wired to a stream you actually read</li>
+<li>[ ] Every <code>except</code> in your tools raises <code>ToolError</code> with an actionable message</li>
+<li>[ ] <code>SqlAdapter</code> has <code>allowed_tables</code> set</li>
+<li>[ ] <code>RestAdapter</code> declares only the endpoints the agent needs</li>
+<li>[ ] <code>FileAdapter</code> excludes credential file patterns</li>
+<li>[ ] You have tried to talk your own server into something it should refuse</li>
+</ul>
+<h2 id="reporting-a-vulnerability">Reporting a vulnerability<a class="headerlink" href="#reporting-a-vulnerability" title="Permanent link">&para;</a></h2>
+<p>Open a draft security advisory on the repository rather than a public issue.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "content.code.copy", "search.suggest"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

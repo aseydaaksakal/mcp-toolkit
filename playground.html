@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>mcp-toolkit playground</title>
+<style>
+  :root { color-scheme: light dark; --line:#e5e7eb; --muted:#6b7280; --accent:#2563eb; --bg2:#f9fafb; --ok:#15803d; --bad:#b91c1c; }
+  @media (prefers-color-scheme: dark) { :root { --line:#1f2937; --muted:#9ca3af; --bg2:#111827; } body { background:#0b0f19; color:#e5e7eb; } }
+  body { font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif; margin:0; padding:1.5rem; max-width:72rem; margin-inline:auto; }
+  h1 { font-size:1.4rem; margin:0 0 .25rem; } h3 { font-size:.95rem; margin:1.2rem 0 .4rem; }
+  .sub { color:var(--muted); margin:0 0 1.25rem; } .sub a { color:var(--accent); }
+  .cols { display:grid; grid-template-columns:1fr 1fr; gap:1rem; } @media (max-width:800px){ .cols{grid-template-columns:1fr} }
+  textarea, pre { width:100%; box-sizing:border-box; font:12.5px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace; padding:.6rem; border:1px solid var(--line); border-radius:6px; background:var(--bg2); color:inherit; margin:0; }
+  textarea { min-height:11rem; resize:vertical; } pre { min-height:11rem; overflow:auto; white-space:pre-wrap; }
+  .presets { display:flex; gap:.4rem; flex-wrap:wrap; margin:.4rem 0 .6rem; }
+  .presets button { font-size:.8rem; padding:.3rem .6rem; border:1px solid var(--line); background:var(--bg2); color:inherit; border-radius:5px; cursor:pointer; }
+  .presets button:hover { border-color:var(--accent); }
+  #send { font:inherit; font-weight:600; padding:.55rem 1.1rem; border-radius:6px; border:1px solid var(--accent); background:var(--accent); color:#fff; cursor:pointer; }
+  #send:disabled { opacity:.5; cursor:wait; }
+  #status { color:var(--muted); font-size:.85rem; margin-left:.75rem; }
+  .ok { color:var(--ok); } .bad { color:var(--bad); }
+  .log { margin-top:1rem; } .log pre { min-height:0; margin-bottom:.5rem; font-size:12px; }
+  .log .req { border-left:3px solid var(--accent); } .log .res { border-left:3px solid var(--ok); } .log .err { border-left:3px solid var(--bad); }
+  details { margin-top:1rem; } summary { cursor:pointer; font-weight:600; }
+  code { font-size:.9em; }
+</style>
+</head>
+<body>
+<h1>mcp-toolkit playground</h1>
+<p class="sub">A real <a href="https://github.com/aseydaaksakal/mcp-toolkit">mcp-toolkit</a> server running in your browser via Pyodide. It has three tools, an access policy that hides <code>orders.delete</code>, a rate limiter, and a redactor. Send it JSON-RPC and watch each one respond. <a href="index.html">← docs</a></p>
+
+<details open><summary>The server you are talking to</summary>
+<pre id="srcview"></pre>
+</details>
+
+<div class="cols">
+  <div>
+    <h3>Request</h3>
+    <div class="presets" id="presets"></div>
+    <textarea id="req" spellcheck="false"></textarea>
+    <p style="margin:.6rem 0"><button id="send" disabled>Loading Python…</button><span id="status"></span></p>
+  </div>
+  <div>
+    <h3>Response</h3>
+    <pre id="res">—</pre>
+  </div>
+</div>
+
+<h3>Session log</h3>
+<div class="log" id="log"></div>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.0/full/pyodide.js"></script>
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+const SERVER_SRC = `from typing import Literal
+from mcp_toolkit import AccessPolicy, MCPServer, RateLimiter, Redactor, ToolError
+
+ORDERS = {
+    "ORD-8812": {"status": "shipped",    "total": 42.5, "customer": "ops@corp.example"},
+    "ORD-8813": {"status": "processing", "total": 11.0, "customer": "sre@corp.example"},
+}
+
+server = MCPServer(
+    "orders-demo", version="0.1.0",
+    policy=AccessPolicy(deny=["*.delete"]),      # orders.delete exists but is invisible
+    rate_limiter=RateLimiter(rate=1, burst=5),   # 5 calls, then one per second
+    redactor=Redactor(),                          # emails never reach the model
+    instructions="Read-only order lookups. Call list_orders first if you need an id.",
+)
+
+@server.tool()
+def list_orders(status: Literal["shipped", "processing", "any"] = "any") -> list[str]:
+    """List known order identifiers.
+
+    Args:
+        status: Only return orders in this state. "any" returns everything.
+    """
+    return sorted(k for k, v in ORDERS.items() if status == "any" or v["status"] == status)
+
+@server.tool(name="orders.lookup")
+def lookup_order(order_id: str, include_customer: bool = False) -> dict:
+    """Look up one order by its internal identifier.
+
+    Args:
+        order_id: Identifier such as "ORD-8812".
+        include_customer: Include the customer contact in the result.
+    """
+    order = ORDERS.get(order_id)
+    if order is None:
+        raise ToolError(f"no order named {order_id!r}; call list_orders for valid ids")
+    return {"id": order_id, **order} if include_customer else {"id": order_id, "status": order["status"]}
+
+@server.tool(name="orders.delete")
+def delete_order(order_id: str) -> str:
+    """Delete an order. Denied by policy, so the model never sees this tool."""
+    return "deleted"
+`;
+
+const PRESETS = [
+  ["initialize", {jsonrpc:"2.0", id:1, method:"initialize", params:{protocolVersion:"2024-11-05", capabilities:{}}}],
+  ["tools/list", {jsonrpc:"2.0", id:2, method:"tools/list"}],
+  ["call list_orders", {jsonrpc:"2.0", id:3, method:"tools/call", params:{name:"list_orders", arguments:{status:"shipped"}}}],
+  ["call orders.lookup", {jsonrpc:"2.0", id:4, method:"tools/call", params:{name:"orders.lookup", arguments:{order_id:"ORD-8812", include_customer:true}}}],
+  ["bad argument", {jsonrpc:"2.0", id:5, method:"tools/call", params:{name:"orders.lookup", arguments:{order_id:8812}}}],
+  ["unknown order", {jsonrpc:"2.0", id:6, method:"tools/call", params:{name:"orders.lookup", arguments:{order_id:"ORD-1"}}}],
+  ["denied tool", {jsonrpc:"2.0", id:7, method:"tools/call", params:{name:"orders.delete", arguments:{order_id:"ORD-8812"}}}],
+  ["ping", {jsonrpc:"2.0", id:8, method:"ping"}],
+];
+
+let pyodide, handle;
+$("#srcview").textContent = SERVER_SRC;
+for (const [label, msg] of PRESETS) {
+  const b = document.createElement("button"); b.textContent = label;
+  b.onclick = () => { $("#req").value = JSON.stringify(msg, null, 2); };
+  $("#presets").appendChild(b);
+}
+$("#req").value = JSON.stringify(PRESETS[0][1], null, 2);
+
+async function boot() {
+  $("#status").textContent = "downloading Pyodide (~10 MB, once)…";
+  pyodide = await loadPyodide();
+  await pyodide.loadPackage("micropip");
+  await pyodide.pyimport("micropip").install(new URL("mcp_toolkit-0.1.0-py3-none-any.whl", location.href).href);
+  $("#status").textContent = "starting server…";
+  pyodide.runPython(SERVER_SRC + `
+import json
+def handle(raw):
+    try:
+        payload = json.loads(raw)
+    except Exception as exc:
+        return json.dumps({"error": f"not valid JSON: {exc}"})
+    reply = server.handle(payload)
+    return json.dumps(reply, indent=2) if reply is not None else "(notification — no reply)"
+`);
+  handle = pyodide.globals.get("handle");
+  $("#send").textContent = "Send"; $("#send").disabled = false;
+  $("#status").textContent = "ready — Python " + pyodide.runPython("import sys; sys.version.split()[0]");
+}
+
+$("#send").addEventListener("click", () => {
+  const raw = $("#req").value;
+  let out;
+  try { out = handle(raw); } catch (e) { out = "playground error: " + e; }
+  $("#res").textContent = out;
+  const isErr = /"error"|isError": true/.test(out);
+  const log = $("#log");
+  log.insertAdjacentHTML("afterbegin",
+    `<pre class="res ${isErr ? "err" : ""}">${esc(out)}</pre><pre class="req">${esc(raw.trim())}</pre>`);
+  $("#status").innerHTML = isErr ? '<span class="bad">handled — error response</span>' : '<span class="ok">handled</span>';
+});
+
+boot().catch(e => { $("#status").textContent = "failed to load: " + e; });
+</script>
+</body>
+</html>
