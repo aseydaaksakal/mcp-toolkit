@@ -1,5 +1,7 @@
 # mcp-toolkit
 
+[![CI](https://github.com/aseydaaksakal/mcp-toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/aseydaaksakal/mcp-toolkit/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/aseydaaksakal/mcp-toolkit?quickstart=1)
+
 Expose internal systems to LLM agents over the [Model Context Protocol](https://modelcontextprotocol.io), without hand-writing JSON-RPC or JSON Schema.
 
 Point it at a database, an internal HTTP API or a directory, decide what the agent may reach, and run it. Python and Go implementations live in the same repository and speak the same wire format.
@@ -51,6 +53,8 @@ go get github.com/aseydaaksakal/mcp-toolkit/go
 ```
 
 ## Try it in 30 seconds
+
+No local setup: click **Open in GitHub Codespaces** above, wait for the terminal, run `pytest` and `cd go && go test ./...`.
 
 Serve the current directory over stdio and talk to it by hand:
 

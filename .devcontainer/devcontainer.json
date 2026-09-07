@@ -1,0 +1,14 @@
+{
+  "name": "mcp-toolkit",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "postCreateCommand": "pip install -e \".[dev]\" && cd go && go mod download",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "charliermarsh.ruff",
+        "golang.go"
+      ]
+    }
+  }
+}
